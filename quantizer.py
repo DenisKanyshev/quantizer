@@ -3,34 +3,44 @@
 import os
 import sys
 import PIL.Image
-from lib_quantize import Pixel
-from lib_quantize import Palette
-from lib_quantize import dithering
+from other import arguments
+from other import ImageDB
+from palette import MedianCut, Octree
+from dithering import Dithering
 
 
-def main(path):
+def main(args):
     print "open image"
-    img = PIL.Image.open(path)
-    assert img.mode == "RGB", "image must be in RGB mode"
-    pixel = Pixel(img)
-    img = PIL.Image.new("P", img.size)
+    image_db = ImageDB(args.path)
     print "create palette"
-    palette = Palette(pixel)
-    img.putpalette(palette.chain)
-    print "quantize"
-    indexed_pixel = img.load()
-    for y in xrange(pixel.Y):
-        sys.stdout.write("\r%d %%" % round(y / (pixel.Y / 100.0)))
-        for x in xrange(pixel.X):
-            index = palette.match(pixel[x, y])
-            indexed_pixel[x, y] = index
-            dithering(pixel, x, y, palette[index])
-    print
-    print "ok, save"
-    # path = "%s_quantized.png" % os.path.splitext(path)[0]
-    path = "%s_quantized.gif" % os.path.splitext(path)[0]
-    img.save(path)
+    if args.algorithm == "median-cut":
+        palette = MedianCut(image_db, args.distance)
+    elif args.algorithm == "medain-cut-with-luma-correction":
+        palette = MedianCut(image_db, args.distance, True)
+    else:
+        palette = Octree(image_db, args.distance)
+    print "quantization"
+    new_image = PIL.Image.new("P", (image_db.X, image_db.Y))
+    new_image.putpalette(palette.chain)
+    pixels = new_image.load()
+    dithering = Dithering(image_db, args.dithering, args.luma)
+    for y in xrange(image_db.Y):
+        sys.stdout.write("\r%d %%" % round(y / (image_db.Y / 100.0)))
+        for x in xrange(image_db.X):
+            index = palette.match(image_db[x, y])
+            pixels[x, y] = index
+            dithering(x, y, palette[index])
+    print "\nsave image"
+    path = "{name}_quantized_({algorithm}_{distance}_{dithering}{luma}).png"
+    path = path.format(
+        name=os.path.splitext(args.path)[0],
+        algorithm=args.algorithm,
+        distance=args.distance,
+        dithering=args.dithering,
+        luma="_luma" if args.luma and args.dithering != "none" else ""
+    )
+    new_image.save(path)
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(arguments())

@@ -1,17 +1,18 @@
 # coding=utf-8
 import os
 import sqlite3
+import PIL.Image
 
 
-DB_NAME = "pixels.db"
-
-
-class Pixel:
-    def __init__(self, img):
-        if os.path.exists(DB_NAME):
-            os.remove(DB_NAME)
-        self.__connection = sqlite3.connect(DB_NAME)
-        self.cursor = self.__connection.cursor()
+class ImageDB:
+    def __init__(self, path):
+        img = PIL.Image.open(path)
+        assert img.mode == "RGB", "image must be in RGB mode"
+        self.__path = "%s.db" % os.path.splitext(path)[0]
+        if os.path.exists(self.__path):
+            os.remove(self.__path)
+        self.connection = sqlite3.connect(self.__path)
+        self.cursor = self.connection.cursor()
         self.cursor.execute(
             "CREATE TABLE pixel(red REAL, green REAL, blue REAL)"
         )
@@ -41,5 +42,5 @@ class Pixel:
         )
 
     def __del__(self):
-        self.__connection.close()
-        os.remove(DB_NAME)
+        self.connection.close()
+        os.remove(self.__path)

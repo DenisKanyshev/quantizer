@@ -1,31 +1,17 @@
 # coding=utf-8
 # https://en.wikipedia.org/wiki/Median_cut
-# http://algolist.manual.ru/graphics/find_col.php
-import itertools
-from . import r709
+from other import luma
+from .palette import Palette
 
 
-class Palette(list):
-    def __init__(self, pixel):
-        super(Palette, self).__init__()
-        for rgb in mediana(pixel.cursor):
+class MedianCut(Palette):
+    def __init__(self, pixel, distance_algorithm, use_luma=False):
+        super(MedianCut, self).__init__(distance_algorithm)
+        for rgb in quantization(pixel.cursor, use_luma):
             self.append(rgb)
-        self.chain = list(itertools.chain(*self))
-
-    def match(self, color):
-        # search for the best matching color in the palette
-        diff = [difference(palette, color) for palette in self]
-        return diff.index(min(diff))
 
 
-def difference(palette, color):
-    r = r709.RED_RATIO * ((palette[0] - color[0]) ** 2)
-    g = r709.GREEN_RATIO * ((palette[1] - color[1]) ** 2)
-    b = r709.BLUE_RATIO * ((palette[2] - color[2]) ** 2)
-    return r + g + b
-
-
-def mediana(cursor):
+def quantization(cursor, use_luma):
     cursor.execute(
         "CREATE TABLE cube AS "
         "SELECT red, green, blue, COUNT(*) AS total "
@@ -39,7 +25,7 @@ def mediana(cursor):
     for _ in xrange(8):
         temp = []
         for segment in cube:
-            temp += split_cube_segment(cursor, segment)
+            temp += split_cube_segment(cursor, segment, use_luma)
             cursor.execute("DROP TABLE %s" % segment)
         cube = temp
     for segment in cube:
@@ -55,7 +41,7 @@ def mediana(cursor):
         yield r, g, b
 
 
-def split_cube_segment(cursor, segment):
+def split_cube_segment(cursor, segment, use_luma):
     cursor.execute(
         "SELECT "
         " MAX(red) - MIN(red), "
@@ -65,9 +51,10 @@ def split_cube_segment(cursor, segment):
         "FROM %s" % segment
     )
     r, g, b, count = cursor.fetchone()
-    r *= r709.RED_RATIO
-    g *= r709.GREEN_RATIO
-    b *= r709.BLUE_RATIO
+    if use_luma:
+        r *= luma.RED
+        g *= luma.GREEN
+        b *= luma.BLUE
     rgb = max(r, g, b)
     if rgb == g:
         order = "green, red, blue"
