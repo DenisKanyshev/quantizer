@@ -6,6 +6,7 @@ Convert image from full color to palette (256 colors) with dithering
 Required: Python 2.7, PIL/Pillow
 
 # usage
+```
 .\quantizer>quantizer.py --help
 usage: quantizer.py [-h]
                     [-a {median-cut,medain-cut-with-luma-correction,octree}]
@@ -31,3 +32,4 @@ optional arguments:
 
 Quantized image saved as
 {path}_quantized_({algorithm}_{distance}_{dithering}_{luma}).png
+```
