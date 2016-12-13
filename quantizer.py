@@ -3,10 +3,10 @@
 import os
 import sys
 import PIL.Image
+from dithering import Dithering
 from other import arguments
 from other import ImageDB
 from palette import MedianCut, Octree
-from dithering import Dithering
 
 
 def main(args):
@@ -26,6 +26,7 @@ def main(args):
     dithering = Dithering(image_db, args.dithering, args.luma)
     for y in xrange(image_db.Y):
         sys.stdout.write("\r%d %%" % round(y / (image_db.Y / 100.0)))
+        sys.stdout.flush()
         for x in xrange(image_db.X):
             index = palette.match(image_db[x, y])
             pixels[x, y] = index

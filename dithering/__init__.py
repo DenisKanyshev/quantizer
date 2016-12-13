@@ -1,2 +1,2 @@
 # coding=utf-8
-from .dithering import Dithering
+from dithering import Dithering

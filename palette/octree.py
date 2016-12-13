@@ -1,6 +1,6 @@
 # coding=utf-8
 # https://en.wikipedia.org/wiki/Octree
-from .palette import Palette
+from palette import Palette
 
 
 class Octree(Palette):
@@ -15,7 +15,6 @@ def level_index(red, green, blue, level):
     red, green, blue = int(red), int(green), int(blue)
     index = 0
     mask = 0b10000000 >> level
-    # mask = 0x80 >> level
     if red & mask:
         index |= 4
     if green & mask:

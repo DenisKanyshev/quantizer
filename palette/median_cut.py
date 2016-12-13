@@ -1,7 +1,7 @@
 # coding=utf-8
 # https://en.wikipedia.org/wiki/Median_cut
 from other import luma
-from .palette import Palette
+from palette import Palette
 
 
 class MedianCut(Palette):

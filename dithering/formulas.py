@@ -1,8 +1,8 @@
 # coding=utf-8
+# formula row format: (x, y, rate)
 
 
 floyd_steinberg = (
-    # x, y, rate
     (1, 0, 7.0/16),
     (1, 1, 1.0/16),
     (0, 1, 5.0/16),
@@ -10,7 +10,6 @@ floyd_steinberg = (
 )
 
 jarvis_judice_and_ninke = (
-    # x, y, rate
     (1, 0, 7.0/48),
     (1, 1, 5.0/48),
     (0, 1, 7.0/48),
@@ -26,7 +25,6 @@ jarvis_judice_and_ninke = (
 )
 
 stucki = (
-    # x, y, rate
     (1, 0, 8.0/42),
     (1, 1, 4.0/42),
     (0, 1, 8.0/42),
@@ -42,7 +40,6 @@ stucki = (
 )
 
 atkinson = (
-    # x, y, rate
     (1, 0, 1.0/8),
     (1, 1, 1.0/8),
     (0, 1, 1.0/8),
@@ -52,7 +49,6 @@ atkinson = (
 )
 
 burkes = (
-    # x, y, rate
     (1, 0, 8.0/32),
     (1, 1, 4.0/32),
     (0, 1, 8.0/32),
@@ -63,7 +59,6 @@ burkes = (
 )
 
 sierra = (
-    # x, y, rate
     (1, 0, 5.0/32),
     (1, 1, 4.0/32),
     (0, 1, 5.0/32),
@@ -77,7 +72,6 @@ sierra = (
 )
 
 two_row_sierra = (
-    # x, y, rate
     (1, 0, 4.0/16),
     (1, 1, 2.0/16),
     (0, 1, 3.0/16),
@@ -88,7 +82,6 @@ two_row_sierra = (
 )
 
 sierra_lite = (
-    # x, y, rate
     (1, 0, 2.0/4),
     (0, 1, 1.0/4),
     (-1, 1, 1.0/4)
