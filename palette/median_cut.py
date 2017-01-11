@@ -26,19 +26,17 @@ def quantization(cursor, use_luma):
         temp = []
         for segment in cube:
             temp += split_cube_segment(cursor, segment, use_luma)
-            cursor.execute("DROP TABLE %s" % segment)
         cube = temp
     for segment in cube:
         cursor.execute(
             "SELECT "
-            " CAST(ROUND(SUM(red * total) / SUM(total)) AS INTEGER), "
-            " CAST(ROUND(SUM(green * total) / SUM(total)) AS INTEGER), "
-            " CAST(ROUND(SUM(blue * total) / SUM(total)) AS INTEGER) "
+            " ROUND(SUM(red * total) / SUM(total)), "
+            " ROUND(SUM(green * total) / SUM(total)), "
+            " ROUND(SUM(blue * total) / SUM(total)) "
             "FROM %s" % segment
         )
-        r, g, b = cursor.fetchone()
-        cursor.execute("DROP TABLE %s" % segment)
-        yield r, g, b
+        red, green, blue = cursor.fetchone()
+        yield red, green, blue
 
 
 def split_cube_segment(cursor, segment, use_luma):
@@ -50,15 +48,15 @@ def split_cube_segment(cursor, segment, use_luma):
         " COUNT(*) "
         "FROM %s" % segment
     )
-    r, g, b, count = cursor.fetchone()
+    red, green, blue, count = cursor.fetchone()
     if use_luma:
-        r *= luma.RED
-        g *= luma.GREEN
-        b *= luma.BLUE
-    rgb = max(r, g, b)
-    if rgb == g:
+        red *= luma.RED
+        green *= luma.GREEN
+        blue *= luma.BLUE
+    rgb = max(red, green, blue)
+    if rgb == green:
         order = "green, red, blue"
-    elif rgb == r:
+    elif rgb == red:
         order = "red, green, blue"
     else:
         order = "blue, green, red"

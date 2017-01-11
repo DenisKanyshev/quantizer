@@ -52,13 +52,13 @@ def quantization(cursor):
         order = ",".join(("i%d" % _ for _ in xrange(level)))
         cursor.execute(
             "SELECT "
-            " CAST(ROUND(SUM(red * total)/SUM(total)) AS INTEGER) AS red, "
-            " CAST(ROUND(SUM(green * total)/SUM(total)) AS INTEGER) AS green, "
-            " CAST(ROUND(SUM(blue * total)/SUM(total)) AS INTEGER) AS blue, "
-            " SUM(total) as tot "
+            " ROUND(SUM(red * total)/SUM(total)) AS red, "
+            " ROUND(SUM(green * total)/SUM(total)) AS green, "
+            " ROUND(SUM(blue * total)/SUM(total)) AS blue, "
+            " SUM(total) as total "
             "FROM indexes "
             "GROUP BY %s "
-            "ORDER BY tot DESC "
+            "ORDER BY total DESC "
             "LIMIT 256" % order
         )
         rows = cursor.fetchall()

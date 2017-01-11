@@ -32,13 +32,13 @@ class ImageDB:
         )
         return self.cursor.fetchone()
 
-    def __setitem__(self, (x, y), (r, g, b)):
+    def __setitem__(self, (x, y), (red, green, blue)):
         rowid = y * self.X + x + 1
         self.cursor.execute(
             "UPDATE pixel "
             "SET red = ?, green = ?, blue = ? "
             "WHERE rowid = ?",
-            (r, g, b, rowid)
+            (red, green, blue, rowid)
         )
 
     def __del__(self):
