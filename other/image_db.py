@@ -20,10 +20,10 @@ class ImageDB:
             "INSERT INTO pixel VALUES(?, ?, ?)",
             img.getdata()
         )
-        self.X, self.Y = img.size
+        self.x, self.y = img.size
 
     def __getitem__(self, (x, y)):
-        rowid = y * self.X + x + 1
+        rowid = y * self.x + x + 1
         self.cursor.execute(
             "SELECT red, green, blue "
             "FROM pixel "
@@ -33,13 +33,22 @@ class ImageDB:
         return self.cursor.fetchone()
 
     def __setitem__(self, (x, y), (red, green, blue)):
-        rowid = y * self.X + x + 1
+        rowid = y * self.x + x + 1
         self.cursor.execute(
             "UPDATE pixel "
             "SET red = ?, green = ?, blue = ? "
             "WHERE rowid = ?",
             (red, green, blue, rowid)
         )
+
+    def __iter__(self):
+        for y in xrange(self.y):
+            for x in xrange(self.x):
+                color = self[x, y]
+                yield x, y, color
+
+    def __len__(self):
+        return self.x * self.y
 
     def __del__(self):
         self.connection.close()

@@ -1,37 +1,34 @@
 # coding=utf-8
 # https://en.wikipedia.org/wiki/Color_quantization
 import os
-import sys
 import PIL.Image
 from dithering import Dithering
-from other import arguments
-from other import ImageDB
+from other import arguments, ImageDB, progress_bar
 from palette import MedianCut, Octree
 
 
 def main(args):
     print "open image"
-    image_db = ImageDB(args.path)
+    image = ImageDB(args.path)
     print "create palette"
     if args.algorithm == "median-cut":
-        palette = MedianCut(image_db, args.distance)
+        palette = MedianCut(image, args.distance)
     elif args.algorithm == "medain-cut-with-luma-correction":
-        palette = MedianCut(image_db, args.distance, True)
+        palette = MedianCut(image, args.distance, True)
     else:
-        palette = Octree(image_db, args.distance)
+        palette = Octree(image, args.distance)
     print "quantization"
-    new_image = PIL.Image.new("P", (image_db.X, image_db.Y))
+    new_image = PIL.Image.new("P", (image.x, image.y))
     new_image.putpalette(palette.chain)
     pixels = new_image.load()
-    dithering = Dithering(image_db, args.dithering, args.luma)
-    for y in xrange(image_db.Y):
-        sys.stdout.write("\r%d %%" % round(y / (image_db.Y / 100.0)))
-        sys.stdout.flush()
-        for x in xrange(image_db.X):
-            index = palette.match(image_db[x, y])
-            pixels[x, y] = index
-            dithering(x, y, palette[index])
-    print "\nsave image"
+    dithering = Dithering(image, args.dithering, args.luma)
+    pb = progress_bar(len(image))
+    for x, y, color in image:
+        pb()
+        index = palette.match(color)
+        pixels[x, y] = index
+        dithering(x, y, palette[index])
+    print "save image"
     path = "{name}_quantized_({algorithm}_{distance}_{dithering}{luma}).png"
     path = path.format(
         name=os.path.splitext(args.path)[0],

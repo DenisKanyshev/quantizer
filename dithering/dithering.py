@@ -14,8 +14,8 @@ luma_correction = (
 
 
 class Dithering(object):
-    def __init__(self, pixel, formula, use_luma=False):
-        self.__pixel = pixel
+    def __init__(self, image, formula, use_luma=False):
+        self.__image = image
         self.__use_luma = use_luma
         formula = formula.replace("-", "_")
         self.__formula = getattr(formulas, formula, None)
@@ -23,20 +23,20 @@ class Dithering(object):
     def __call__(self, x, y, rgb):
         if self.__formula is None:
             return
-        error = map(sub, self.__pixel[x, y], rgb)
+        error = map(sub, self.__image[x, y], rgb)
         if self.__use_luma:
             error = map(mul, error, luma_correction)
         for xd, yd, rate in self.__formula:
             xd = xd + x
             yd = yd + y
-            if not (0 <= xd < self.__pixel.X and 0 <= yd < self.__pixel.Y):
+            if not (0 <= xd < self.__image.x and 0 <= yd < self.__image.y):
                 continue
             rgb = []
-            for color, color_error in zip(self.__pixel[xd, yd], error):
+            for color, color_error in zip(self.__image[xd, yd], error):
                 color = color + color_error * rate
                 if color < 0:
                     color = 0.0
                 elif color > 255:
                     color = 255.0
                 rgb.append(color)
-            self.__pixel[xd, yd] = rgb
+            self.__image[xd, yd] = rgb
