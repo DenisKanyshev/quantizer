@@ -2,7 +2,7 @@
 # https://en.wikipedia.org/wiki/Euclidean_distance
 # http://algolist.manual.ru/graphics/find_col.php
 # http://www.compuphase.com/cmetric.htm
-from other.luma import RED, GREEN, BLUE
+from lib.luma import RED, GREEN, BLUE
 
 
 class Palette(list):

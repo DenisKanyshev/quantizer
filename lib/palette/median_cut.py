@@ -1,7 +1,7 @@
 # coding=utf-8
 # https://en.wikipedia.org/wiki/Median_cut
-from other import luma
-from palette import Palette
+from lib.luma import RED, GREEN, BLUE
+from lib.palette.palette import Palette
 
 
 class MedianCut(Palette):
@@ -50,9 +50,9 @@ def split_cube_segment(cursor, segment, use_luma):
     )
     red, green, blue, count = cursor.fetchone()
     if use_luma:
-        red *= luma.RED
-        green *= luma.GREEN
-        blue *= luma.BLUE
+        red *= RED
+        green *= GREEN
+        blue *= BLUE
     rgb = max(red, green, blue)
     if rgb == green:
         order = "green, red, blue"

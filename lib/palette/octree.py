@@ -1,6 +1,6 @@
 # coding=utf-8
 # https://en.wikipedia.org/wiki/Octree
-from palette import Palette
+from lib.palette.palette import Palette
 
 
 class Octree(Palette):
